@@ -1,0 +1,7 @@
+Small lib in lib/jsz.js
+
+Try to create controllers(DirectAPI) and models work with ext4
+
+node.js (express + mongoose)
+MongoDB
+Sencha Ext JS 4 (beta 1 for now)
