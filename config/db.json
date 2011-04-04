@@ -1,0 +1,21 @@
+{
+
+	"development": {
+		"driver"	: "mongoose",
+		"host"		: "localhost",
+		"database": "exp1-dev"
+	},
+
+	"test": {
+		"driver"	: "mongoose",
+		"host"		: "localhost",
+		"database": "exp1-test"
+	},
+
+	"production": {
+		"driver"	: "mongoose",
+		"host"		: "localhost",
+		"database": "exp1-production"
+	}
+
+}
