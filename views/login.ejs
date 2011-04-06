@@ -1,0 +1,53 @@
+/* vim: set filetype=javascript : */
+Ext.onReady(function(){
+	Ext.form.BaseField.prototype.msgTarget = 'side';
+	Ext.app.REMOTING_API.enableBuffer = 100;
+	//Ext.direct.Manager.addProvider(Ext.app.REMOTING_API);
+	Ext.tip.QuickTips.init();
+
+	// HERE
+	<%- xxx %>
+	// HERE
+
+	var win = Ext.create('Ext.window.Window', {
+		title: 'Login window',
+		width: 350, autoHeight: true,
+		closable: false, resizable: false,
+		items: Ext.create('Ext.form.FormPanel', {
+			api: { submit: Login.some1 },
+			border: false, frame: true,
+			buttons: [{
+				text: 'Login', formBind: true, 
+				handler: function(){
+					//console.log(this);
+					var form = this.up().up().getForm();
+					//var form = this.ownerCt.ownerCt.getForm();
+					//console.log(form);
+					form.submit();
+					//form.submit({ params: { a:1, b:2 }});
+					// test json
+					//Login.some(form.getValues());
+				}
+			}],
+			defaultType: 'textfield',
+			defaults: { anchor: '100%', allowBlank: false },
+			items: [{
+				name: 'username', fieldLabel: 'User', value: 'sample-user'
+			},{
+				name: 'password', fieldLabel: 'Password', inputType: 'password', value: 'sample-password'
+			}]
+		})
+	});
+	win.show();
+
+	//F = win.items.first().getForm();
+	//Login.some1(F.getValues());
+	//Login.some1(F.getValues());
+
+	ZZZ = function(){
+		Login.some2({ a:1, b:2});
+		Login.some2({ a:1, b:2});
+		Login.some2({ a:1, b:2});
+	};
+
+});

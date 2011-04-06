@@ -1,16 +1,48 @@
-var crypto = require('crypto');
+var crypto = require('crypto'),
+		Schema = Mongoose.Schema,
+		ObjectId = Schema.ObjectId,
+		util = require('util');
 
-var User = new Mongoose.Schema({
-		name: { type: String },
-		pass: { type: String, set: hashIt },
+// Ppl
+var Ppl = new Schema({
+	im: String,
+	fam: String,
+	oth: String
 });
 
-function hashIt(v){
-	return(crypto.createHash('md5').update(v).digest('hex'));
-}
+// User
+var User = new Schema({
+		ppl_id: ObjectId,
+		login: String,
+		pswd: { salt: String , hash: String }
+});
 
-User.virtual('full').get(function(){
-	return this.name + ' - ' + this.pass;
+function getCrypted(salt, pass){ return crypto.createHmac('sha1', salt).update(pass).digest('hex') };
+User.virtual('password')
+	.set(function(pass){
+		var salt = (function getSalt(){
+			var str = '', chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
+			chars.forEach(function(){ str += chars[Math.floor(Math.random() * chars.length)] });
+			return str;
+		})();
+		this.set('pswd.salt', salt);
+		this.set('pswd.hash', getCrypted(salt, pass));
+	})
+	.get(function(){
+		return this.pswd.hash
+	});
+
+User.static({
+	auth: function(login, password, callback){
+		this.findOne({ login: login }, function(err, user){
+			if (user && user.password === getCrypted(user.pswd.salt, password)){
+				var Ppl = Mongoose.model('Ppl');
+				Ppl.findById(user.ppl_id, function(err,ppl){
+					callback({ user: user, ppl: ppl });
+				});
+			}else{ callback(null) }
+		});
+	}
 });
 
 /*
@@ -21,3 +53,4 @@ User.path('name').validate(function(v){
 */
 
 Mongoose.model('User', User);
+Mongoose.model('Ppl', Ppl);

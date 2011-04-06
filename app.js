@@ -4,28 +4,12 @@
 var express = require('express');
 
 var app = module.exports = express.createServer(),
-    //mongoStore = require('connect-mongodb'),
+    mongoStore = require('connect-mongodb'),
 		jsz = require(__dirname + '/lib/jsz');
 
 // Global
 Mongoose = require('mongoose');
 Mongoose.connect('mongodb://localhost/test');
-
-//Mongoose = require('mongoose');
-//Mongoose.connect('mongodb://localhost/test');
-//Model = Mongoose.noSchema('test',db);
-//mongoose.load('./models/');
-
-//app.settings.db = JSON.parse(require('fs').readFileSync(__dirname + '/config/db.json', 'utf-8'))[app.settings.env];
-/*
-var mongoSessionStore = mongoStore({
-    // maxAge:   60000,
-    dbname:   app.settings.db.database,
-    host:     app.settings.db.host,
-    username: app.settings.db.user,
-    password: app.settings.db.password
-}, function () {});
-*/
 
 // Configuration
 app.configure(function(){
@@ -34,8 +18,7 @@ app.configure(function(){
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.cookieParser());
-  app.use(express.session({ secret: 'your secret here' }));
-  //app.use(express.session({ secret: 'your secret here', store: mongoSessionStore }));
+  app.use(express.session({ secret: 'your secret here', store: mongoStore({ dbname: 'test' }) }));
   app.use(express.logger({ format: '\x1b[32m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' }))
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
@@ -53,7 +36,24 @@ app.configure('production', function(){
 app.jsz = jsz.init(__dirname, app);
 
 // Routes
-app.get('/', function(req, res){
+// Auth by-default
+function loadUser(req, res, next){
+	req.user = [];
+	next();
+};
+
+function restrictUnauthorized(req, res, next){
+	console.log('User: ' + req.user.id);
+	next();
+	//res.redirect('/login');
+	//req.user.id ? next() : app.redirect('login', '/login');
+};
+
+app.get('/login', function(req, res){
+	res.render('login');
+});
+
+app.get('/', loadUser, restrictUnauthorized, function(req, res){
   res.render('index', {
     title: 'Express'
   });
