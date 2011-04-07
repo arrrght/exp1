@@ -5,20 +5,28 @@ var crypto = require('crypto'),
 
 // Ppl
 var Ppl = new Schema({
-	im: String,
-	fam: String,
-	oth: String
+	name: {
+		im: String,
+		fam: String,
+		oth: String
+	},
+	login: String,
+	pswd: { salt: String , hash: String }
 });
 
-// User
-var User = new Schema({
-		ppl_id: ObjectId,
-		login: String,
-		pswd: { salt: String , hash: String }
-});
+function getCrypted(salt, pass){
+	return crypto.createHmac('sha1', salt).update(pass).digest('hex')
+};
 
-function getCrypted(salt, pass){ return crypto.createHmac('sha1', salt).update(pass).digest('hex') };
-User.virtual('password')
+Ppl.virtual('fullName').get(function(){
+	return this.name.fam + ' ' + this.name.im + ' ' + this.name.oth;
+});
+Ppl.virtual('shortName').get(function(){
+	return this.name.fam[0].toUpperCase() + this.name.fam.slice(1) + ' '
+		+ (this.name.im ? this.name.im[0].toUpperCase() + '.' : '')
+		+ (this.name.oth ? this.name.oth[0].toUpperCase() + '.' : '');
+});
+Ppl.virtual('password')
 	.set(function(pass){
 		var salt = (function getSalt(){
 			var str = '', chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
@@ -32,15 +40,14 @@ User.virtual('password')
 		return this.pswd.hash
 	});
 
-User.static({
+Ppl.static({
 	auth: function(login, password, callback){
 		this.findOne({ login: login }, function(err, user){
 			if (user && user.password === getCrypted(user.pswd.salt, password)){
-				var Ppl = Mongoose.model('Ppl');
-				Ppl.findById(user.ppl_id, function(err,ppl){
-					callback({ user: user, ppl: ppl });
-				});
-			}else{ callback(null) }
+				callback(user);
+			}else{
+				callback(null);
+			}
 		});
 	}
 });
@@ -52,5 +59,4 @@ User.path('name').validate(function(v){
 }, 'Username length must be more than 9999');
 */
 
-Mongoose.model('User', User);
 Mongoose.model('Ppl', Ppl);

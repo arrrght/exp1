@@ -1,0 +1,80 @@
+/* vim: set filetype=javascript : */
+Ext.onReady(function(){
+	Ext.tip.QuickTips.init();
+
+	Ext.regModel('Ppl',{
+		fields: [ 'login', 'id', 'name_im', 'name_fam', 'name_oth' ],
+		proxy: { type: 'direct', directFn: Login.getOrg }
+	});
+
+	Ext.regStore('PplStore', { model: 'Ppl', autoLoad: true });
+
+	Ext.create('Ext.window.Window', {
+		width: 640, height: 380, layout: 'fit',
+		title: 'Users/Rights assigment',
+		items: [
+			Ext.create('Ext.TabPanel',{
+				border: false,
+				items: [
+					Ext.create('Ext.Panel', {
+						title: 'Users',
+						layout: 'border',
+						items: [
+							Ext.create('Ext.form.FormPanel', {
+								id: 'fp',
+								region: 'center',
+								defaults: { xtype: 'textfield', anchor: '100%' },
+								frame: true, border: false,
+								items: [
+									{ fieldLabel: 'Фамилия', name: 'name_fam' },
+									{ fieldLabel: 'Имя', name: 'name_im' },
+									{ fieldLabel: 'Отчество', name: 'name_oth' },
+									{ fieldLabel: 'Права', xtype: 'trigger' },
+									{ xtype: 'fieldcontainer',
+										fieldLabel: 'Пароль',
+										msgTarget: 'side',
+										layout: 'hbox', anchor: '100%',
+										defaults: { xtype: 'textfield', hideLabel: true, flex: 1 },
+										items: [
+											//{ xtype: 'displayfield', value: 'One' },
+											{ name: 'pass1', inputType: 'password' },
+											{ xtype: 'displayfield', value: '/', flex: 0, margins: { left: 5, right: 5 } },
+											{ name: 'pass2', inputType: 'password' }
+										]
+									}
+								],
+								bbar: [
+									{ text: 'Опции', menu: { items:[
+										{ text: 'Удалить' }, { text: 'Заблокировать / Разблокировать' }
+									]}}, '->',
+									//{ text: 'Заблокирован', allowDepres: true, pressed: true }, '-',
+									{ text: 'Сохранить' },
+								]
+							}),
+							Ext.create('Ext.grid.GridPanel', {
+								region: 'west', width: 200, split: true,
+								viewConfig: { forceFit: true },
+								hideHeaders: true, border: false,
+								store: 'PplStore',
+								columns: [{ dataIndex: 'login', text: 'login', flex: 1 }],
+								listeners: {
+									afterRender: function(grid){
+										grid.getSelectionModel().on('selectionchange', function(sm, sel){
+											if(sel.length){
+												Ext.getCmp('fp').getForm().reset().setValues( sel[0].data );
+											}
+										});
+									}
+								}
+							})
+						]
+					}),
+					Ext.create('Ext.panel.Panel', {
+						disabled: true,
+						title: 'Rights'
+					})
+				]
+			})
+		]
+	}).show();
+});

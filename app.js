@@ -35,28 +35,52 @@ app.configure('production', function(){
 
 app.jsz = jsz.init(__dirname, app);
 
+// Default is adm/adm
+function createDefUser(req,res,next){
+	var Ppl = Mongoose.model('Ppl');
+	Ppl.findOne({ login: 'adm' }, function(err, doc){
+		if(doc){
+			next();
+		}else{
+			var u = new Ppl({ login: 'adm', password: 'adm', name: { im: 'adm-im', fam: 'adm-fam', oth: 'adm-oth' }, suspended: false });
+			u.save(function(){
+				next();
+			});
+		}
+	});
+}
 // Routes
 // Auth by-default
 function loadUser(req, res, next){
-	req.user = [];
+	//req.session.user_id = '1';
+	//req.user = [];
 	next();
 };
 
 function restrictUnauthorized(req, res, next){
-	console.log('User: ' + req.user.id);
-	next();
-	//res.redirect('/login');
-	//req.user.id ? next() : app.redirect('login', '/login');
+	console.log('User: ' + req.session.user_id);
+	req.session.user_id ? next() : res.redirect('/login');
 };
 
-app.get('/login', function(req, res){
+app.get('/login', createDefUser, function(req, res){
 	res.render('login');
 });
 
-app.get('/', loadUser, restrictUnauthorized, function(req, res){
+app.get('/logout', createDefUser, function(req, res){
+	delete req.session.user_id;
+	//req.session.user_id = null;
+	res.redirect('/');
+	//res.render('login');
+});
+
+app.get('/', createDefUser, restrictUnauthorized, function(req, res){
   res.render('index', {
     title: 'Express'
   });
+});
+
+app.get('/win', function(req, res){
+	res.render('win');
 });
 
 

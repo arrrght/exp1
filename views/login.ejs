@@ -2,15 +2,10 @@
 Ext.onReady(function(){
 	Ext.form.BaseField.prototype.msgTarget = 'side';
 	Ext.app.REMOTING_API.enableBuffer = 100;
-	//Ext.direct.Manager.addProvider(Ext.app.REMOTING_API);
 	Ext.tip.QuickTips.init();
 
-	// HERE
-	<%- xxx %>
-	// HERE
-
 	var win = Ext.create('Ext.window.Window', {
-		title: 'Login window',
+		title: 'Login window <%- session.user_id %>',
 		width: 350, autoHeight: true,
 		closable: false, resizable: false,
 		items: Ext.create('Ext.form.FormPanel', {
@@ -19,14 +14,12 @@ Ext.onReady(function(){
 			buttons: [{
 				text: 'Login', formBind: true, 
 				handler: function(){
-					//console.log(this);
 					var form = this.up().up().getForm();
-					//var form = this.ownerCt.ownerCt.getForm();
-					//console.log(form);
-					form.submit();
-					//form.submit({ params: { a:1, b:2 }});
-					// test json
-					//Login.some(form.getValues());
+					form.submit({
+						success: function(form, action){
+							window.location = '/';
+						}
+					});
 				}
 			}],
 			defaultType: 'textfield',
