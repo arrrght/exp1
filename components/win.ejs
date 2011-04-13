@@ -1,0 +1,109 @@
+// vim: ft=javascript
+Ext.onReady(function(){
+	Ext.tip.QuickTips.init();
+
+	Ext.regModel('Ppl',{
+		fields: [ 'login', 'id', 'fullName', 'name_im', 'name_fam', 'name_oth' ],
+		proxy: { type: 'direct', directFn: Login.getOrg }
+	});
+
+	Ext.regStore('PplStore', { model: 'Ppl', autoLoad: true });
+
+	var usersRightsForm = Ext.create('Ext.form.FormPanel', {
+		region: 'center',
+		//disabled: true,
+		api: { submit: Login.pplSendForm },
+		defaults: { xtype: 'textfield', anchor: '100%' },
+		frame: true, border: false,
+		items: [
+			{ xtype: 'hiddenfield', name: 'id' },
+			{ fieldLabel: 'Login', name: 'login' },
+			{ fieldLabel: 'Фамилия', name: 'name_fam' },
+			{ fieldLabel: 'Имя', name: 'name_im' },
+			{ fieldLabel: 'Отчество', name: 'name_oth' },
+			{ fieldLabel: 'Права', xtype: 'trigger', name: 'rights' },
+			{ xtype: 'fieldcontainer',
+				fieldLabel: 'Пароль',
+				msgTarget: 'side',
+				layout: 'hbox', anchor: '100%',
+				defaults: { xtype: 'textfield', hideLabel: true, flex: 1 },
+				items: [
+					{ name: 'pass1', inputType: 'password' },
+					{ xtype: 'displayfield', value: '/', flex: 0, margins: { left: 5, right: 5 } },
+					{ name: 'pass2', inputType: 'password' }
+				]
+			}
+		],
+		bbar: [
+			{ text: 'Опции', menu: { items:[
+				{ text: 'Удалить', handler: function(){
+					var u = Ext.getCmp('usersGrid').getSelectionModel().getSelection()[0].data.id;
+					Ext.Msg.show({
+						title: 'Удалить', msg: 'Уверены?', buttons: Ext.Msg.YESNO, fn: function(btn){
+							if (btn == 'yes'){
+								Login.pplDelete({ id: u }, function(){
+									usersRightsForm.getForm().reset();
+									Ext.getStore('PplStore').load();
+								});
+							}
+						}
+					})
+				}},
+				{ text: 'Заблокировать / Разблокировать' }
+			]}}, '->',
+			//{ text: 'Заблокирован', allowDepres: true, pressed: true }, '-',
+			{ text: 'Сохранить', handler: function(a,b,c){
+				usersRightsForm.getForm().submit({
+					success: function(){
+						usersRightsForm.getForm().reset();
+						Ext.getStore('PplStore').load();
+					}
+				});
+			}},
+		]
+	});
+
+
+	var userRightsWindow = Ext.create('Ext.window.Window', {
+		width: 640, height: 380, layout: 'fit',
+		title: 'Users/Rights assigment',
+		items: [
+			Ext.create('Ext.TabPanel',{
+				border: false,
+				items: [
+					Ext.create('Ext.Panel', {
+						title: 'Users',
+						layout: 'border',
+						items: [
+							usersRightsForm,
+							Ext.create('Ext.grid.GridPanel', {
+								id: 'usersGrid',
+								region: 'west', width: 200, split: true,
+								viewConfig: { forceFit: true },
+								hideHeaders: true, border: false,
+								store: 'PplStore',
+								columns: [{ dataIndex: 'fullName', flex: 1 }],
+								listeners: {
+									afterRender: function(grid){
+										grid.getSelectionModel().on('selectionchange', function(sm, sel){
+											if(sel.length){
+												usersRightsForm.getForm().reset().setValues( sel[0].data );
+											}else{
+											}
+										});
+									}
+								}
+							})
+						]
+					}),
+					Ext.create('Ext.panel.Panel', {
+						disabled: true,
+						title: 'Rights'
+					})
+				]
+			})
+		]
+	});
+
+	//userRightsWindow.show();
+});

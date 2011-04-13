@@ -1,0 +1,93 @@
+// vim: ft=javascript
+var orgNew = function(){
+
+	var p1 = Ext.create('Ext.form.FormPanel', {
+					title: 'Основная информация', xtype: 'form', bodyStyle: 'background-color:#DFE8F6; padding: 5px 0 0 0;',
+					layout: { type: 'vbox', align: 'stretch' },
+					fieldDefaults: { anchor: '100%', labelAlign: 'top', msgTarget: 'side' },
+					defaults: { height: 44, xtype: 'container', bodyStyle: 'background-color:#DFE8F6;', layout: 'hbox', border: false },
+					items: [{
+						defaults: { flex:1, xtype: 'textfield'}, items: [{
+							flex: 3, fieldLabel: 'Название', margins: { right: 5 },
+						},{
+							fieldLabel: 'Форма', margins: { right: 5 },
+						},{
+							flex: 5, fieldLabel: 'Юридическое название'
+						}]
+					},{
+						defaults: { flex:1, xtype: 'textfield'}, items: [{
+							flex:2, fieldLabel: 'ИНН', margins: { right: 5 },
+						},{
+							flex:2, fieldLabel: 'КПП', margins: { right: 5 },
+						},{
+							flex:3, fieldLabel: 'Должность руководителя', margins: { right: 5 },
+						},{
+							flex:4, fieldLabel: 'ФИО руководителя'
+						}]
+					},{
+						defaults: { flex:1, xtype: 'textfield'}, items: [{
+							fieldLabel: 'Округ', margins: { right: 5 },
+						},{
+							fieldLabel: 'Область', margins: { right: 5 },
+						},{
+							fieldLabel: 'Район'
+						}]
+					},{
+						defaults: { flex:1, xtype: 'textfield'}, items: [{
+							fieldLabel: 'Индекс', margins: { right: 5 },
+						},{
+							flex:3, fieldLabel: 'Улица', margins: { right: 5 },
+						},{
+							fieldLabel: 'Дом', margins: { right: 5 },
+						},{
+							fieldLabel: 'Литера', margins: { right: 5 },
+						},{
+							fieldLabel: 'Офис', margins: { right: 5 },
+						},{
+							flex:4, fieldLabel: 'Вышестоящая организация'
+						}]
+					},{
+						flex:3, layout: { type: 'vbox', align: 'stretch' }, items: [{
+							layout: { type: 'hbox', align: 'stretch' }, border: false, bodyStyle: 'background-color:#DFE8F6;', flex:1, items: [{
+								flex:3, fieldLabel: 'Классификатор', xtype: 'textarea', margins: { right: 5 },
+							},{
+								flex:2, fieldLabel: 'Равноправные организации', xtype: 'textarea', margins: { right: 5 },
+							},{
+								flex:2, fieldLabel: 'Филиалы', xtype: 'textarea'
+							}]
+						}]
+					},{
+						//items: {
+							height: 90, fieldLabel: 'Комментарий', xtype: 'textarea' 
+							//}
+					}]
+	});
+
+	var win = Ext.create('Ext.window.Window', {
+		modal: true,
+		//tools: { id: 'maximize' },
+		bbar: ['->', { xtype: 'button', text: 'Сохранить' }],
+		title: 'Редактирование карточки предприятия, Время [ у нас - 13:40, у них - 18:40 ]',
+		height: 530,
+		width: 800, layout: 'fit',
+		border: true,
+		bodyStyle: 'background-color: #DFE8F6; padding:5px 5px 0;',
+		items: new Ext.create('Ext.tab.TabPanel', {
+			layout: 'fit',
+			border: false,
+			//activeTab: 1,
+			//tabPosition: 'bottom',
+			items: [ 
+				p1,
+				{ title: 'Контакты', html: 'Контакты' },
+				{ title: 'Договора', html: 'Контакты' },
+				{ title: 'Продажи', html: 'Контакты' },
+				{ title: 'Техническая база', html: 'Отчеты' },
+				{ title: 'Отчеты', html: 'Отчеты' },
+			]
+		})
+		//items: panel,
+	});
+
+	return win;
+}

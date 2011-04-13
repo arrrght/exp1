@@ -1,0 +1,39 @@
+// vim: ft=javascript
+Ext.Loader.onReady(function(){
+
+	// Models
+	Ext.regModel('Org', {
+		fields: [
+			{ name: 'id', type: 'string' },
+			{ name: 'Name', type: 'string' },
+			{ name: 'City', type: 'string' },
+			{ name: 'Area', type: 'string' }
+		],
+		proxy: {
+			type: 'direct',
+			api: { read: Login.getOrg, create: Login.some }
+		}
+	});
+
+	Ext.regModel('Ppl',{
+		fields: [ 'login', 'id', 'fullName', 'name_im', 'name_fam', 'name_oth' ],
+	});
+
+	/*
+	Ext.define('App.PplStore', {
+		extend: 'Ext.data.Store',
+		constructor: function(config){
+			config = config || {};
+			config.model = 'Ppl';
+			config.proxy = {
+				type: 'direct',
+				directFn: Login.getOrg
+			};
+			App.PplStore.superclass.constructor.call(this, config);
+		}
+	});
+	*/
+
+	Ext.regStore('PplStore', { proxy: { type: 'direct', directFn: Login.getOrg }, model: 'Ppl' });
+
+}, false);

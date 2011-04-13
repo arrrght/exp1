@@ -1,0 +1,150 @@
+// vim: ft=javascript
+
+Ext.regModel('Sample', {
+	fields: [{ name: 'Name', type: 'string' }]
+});
+
+/*
+// DELME:: Wait for next release of Ext4
+// I just can't use: Org.load(123)
+Ext.define('Ext.data.DirectProxyBUG',{
+	alias: 'proxy.buggy-direct',
+	extend: 'Ext.data.DirectProxy',
+	doRequest: function(operation, callback, scope){
+		var me = this;
+		if (operation.id){
+			operation.params = operation.params || {};
+			operation.params.id = operation.id;
+		}
+		me.callParent(arguments);
+	}
+});
+// end-of-DELME
+*/
+
+Ext.regModel('Org', {
+	fields: [
+		{ name: 'id', type: 'string' },
+		{ name: 'Name', type: 'string' },
+		{ name: 'City', type: 'string' },
+		{ name: 'Area', type: 'string' }
+	],
+	proxy: {
+		//type: 'buggy-direct',
+		type: 'direct',
+		api: { read: Login.getOrg, create: Login.some }
+	}
+});
+
+
+Ext.onReady(function(){
+
+
+	// Global DBG
+	//Org = Ext.ModelMgr.getModel('Org');
+	//Org.load(1111);
+
+	new Ext.container.Viewport({
+		layout: 'fit',
+		items: Ext.create('Ext.panel.Panel', {
+			layout: { type: 'hbox', align: 'stretch' },
+			// Big toolbar
+			/*
+			tbar: Ext.create('Ext.toolbar.Toolbar', {
+				items: [
+					// ORG
+					Ext.create('Ext.container.ButtonGroup', {
+						columns: 3,
+						title: 'Организации',
+						items: [
+							// New
+							{ text: 'Новая' },
+							// Filter
+							{ text: 'Фильтр' }
+						]
+					}),
+					// Workbook
+					Ext.create('Ext.container.ButtonGroup', {
+						columns: 3,
+						title: 'Ежедневник',
+						items: [
+							// New
+							{ text: 'Новая задача' },
+							// Filter
+							{ text: 'Фильтр' }
+						]
+					}),
+					// Admin
+					Ext.create('Ext.container.ButtonGroup', {
+						columns: 3,
+						title: 'Администрирование',
+						items: [
+							// Users
+							{ text: 'Пользователи' },
+							// Log
+							{ text: 'Лог' }
+						]
+					}),
+
+				]
+			}),
+			*/
+			items: [
+				// Left Panel
+				Ext.create('Ext.panel.Panel', {
+					flex: 100,
+					layout: 'accordion',
+					items: [
+						// My Org
+						Ext.create('Ext.grid.GridPanel', {
+							title: 'Мои организации',
+							store: Ext.create('Ext.data.Store', {
+								model: 'Org'
+							}),
+							viewConfig: { forceFit: true },
+							columns: [{ text: 'Name', flex: 1 }, { text: 'City', flex: 0.5 }, { text: 'Area', flex: 1 }]
+						}),
+
+						{ html: 'other' }
+						// All Org
+						/*
+						Ext.create('Ext.grid.GridPanel', {
+							title: 'Все организации',
+							store: Ext.create('Ext.data.Store', {
+								model: 'Sample'
+							}),
+							headers: [{ name: 'Name' }]
+						}),
+						*/
+					]
+				}),
+				// Right Panel
+				Ext.create('Ext.panel.Panel', {
+					flex: 100,
+					layout: 'accordion',
+					items: [ { html: 'asdasd' }, { html: 'asdasdasd' }
+						/*
+						// My Tasks
+						Ext.create('Ext.grid.GridPanel',{
+							title: 'Задачи в работе',
+							store: Ext.create('Ext.data.Store', {
+								model: 'Sample',
+							}),
+							headers: [{ name: 'Name' }]
+						}),
+						// My done Tasks
+						Ext.create('Ext.grid.GridPanel',{
+							title: 'Выполненные задачи',
+							store: Ext.create('Ext.data.Store', {
+								model: 'Sample',
+							}),
+							headers: [{ name: 'Name' }]
+						}),
+						*/
+					]
+				})
+			]
+		})
+	});
+
+});

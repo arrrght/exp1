@@ -1,0 +1,37 @@
+// vim: ft=javascript
+// Organizations (My and All)
+Ext.onReady(function(){
+
+// My Org
+Ext.define('App.OrgMy', {
+	extend: 'Ext.grid.GridPanel',
+
+	initComponent: function(){
+		Ext.applyIf(this, {
+			title: 'Мои организации',
+			store: Ext.create('Ext.data.Store', { model: 'Org' }),
+			viewConfig: { forceFit: true },
+			columns: [{ text: 'Name', flex: 1 }, { text: 'City', flex: 0.5 }, { text: 'Area', flex: 1 }]
+		});
+		App.OrgMy.superclass.initComponent.call(this);
+	}
+});
+
+
+// All Org
+Ext.define('App.OrgAll', {
+	extend: 'Ext.grid.GridPanel',
+
+	initComponent: function(){
+		Ext.apply(this, {
+			title: 'Все организации',
+			store: Ext.create('Ext.data.Store', { model: 'Org' }),
+			viewConfig: { forceFit: true },
+			columns: [{ text: 'Name', flex: 1 }, { text: 'City', flex: 0.5 }, { text: 'Area', flex: 1 }]
+		});
+		App.OrgAll.superclass.initComponent.call(this);
+	}
+});
+
+// eof-Loader-OnReady
+});

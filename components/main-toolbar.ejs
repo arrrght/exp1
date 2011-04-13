@@ -1,0 +1,51 @@
+// vim: ft=javascript
+Ext.Loader.onReady(function(){
+
+Ext.define('App.MainTB',{
+	extend: 'Ext.toolbar.Toolbar',
+
+	initComponent: function(){
+		this.items = [
+
+			// ORG
+			Ext.create('Ext.container.ButtonGroup', {
+				columns: 3,
+				title: 'Организации',
+				items: [
+					// New
+					{ text: 'Новая', handler: function(){ orgNew().show() }},
+					// Filter
+					{ text: 'Фильтр' }
+				]
+			}),
+
+			// Workbook
+			Ext.create('Ext.container.ButtonGroup', {
+				columns: 3,
+				title: 'Ежедневник',
+				items: [
+					// New
+					{ text: 'Новая задача' },
+					// Filter
+					{ text: 'Фильтр' }
+				]
+			}),
+
+			// Admin
+			Ext.create('Ext.container.ButtonGroup', {
+				columns: 3,
+				title: 'Администрирование',
+				items: [
+					// Users
+					{ text: 'Пользователи', handler: function(){ usersMan().show() }},
+					// Log
+					{ text: 'Лог' }
+				]
+			})
+		];
+		App.MainTB.superclass.initComponent.call(this);
+	}
+});
+
+// eof-Loader-OnReady
+}, false);

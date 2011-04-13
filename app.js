@@ -33,7 +33,7 @@ app.configure('production', function(){
   app.use(express.errorHandler()); 
 });
 
-app.jsz = jsz.init(__dirname, app);
+jsz.init(__dirname, app);
 
 // Default is adm/adm
 function createDefUser(req,res,next){
@@ -68,15 +68,18 @@ app.get('/login', createDefUser, function(req, res){
 
 app.get('/logout', createDefUser, function(req, res){
 	delete req.session.user_id;
-	//req.session.user_id = null;
 	res.redirect('/');
-	//res.render('login');
 });
 
 app.get('/', createDefUser, restrictUnauthorized, function(req, res){
   res.render('index', {
     title: 'Express'
   });
+});
+
+app.get('/components/*', function(req, res){
+	res.header('Content-type', 'text/javascript');
+	res.partial(__dirname + req.url);
 });
 
 app.get('/win', function(req, res){

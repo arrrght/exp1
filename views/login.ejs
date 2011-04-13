@@ -1,18 +1,16 @@
-/* vim: set filetype=javascript : */
+// vim: ft=javascript
 Ext.onReady(function(){
-	Ext.form.BaseField.prototype.msgTarget = 'side';
-	Ext.app.REMOTING_API.enableBuffer = 100;
 	Ext.tip.QuickTips.init();
 
-	var win = Ext.create('Ext.window.Window', {
-		title: 'Login window <%- session.user_id %>',
+	Ext.create('Ext.window.Window', {
+		title: 'Login window',
 		width: 350, autoHeight: true,
 		closable: false, resizable: false,
 		items: Ext.create('Ext.form.FormPanel', {
 			api: { submit: Login.some1 },
 			border: false, frame: true,
 			buttons: [{
-				text: 'Login', formBind: true, 
+				text: 'Login',
 				handler: function(){
 					var form = this.up().up().getForm();
 					form.submit({
@@ -23,24 +21,13 @@ Ext.onReady(function(){
 				}
 			}],
 			defaultType: 'textfield',
-			defaults: { anchor: '100%', allowBlank: false },
+			defaults: { anchor: '100%', allowBlank: false, msgTarget: 'side' },
 			items: [{
 				name: 'username', fieldLabel: 'User', value: 'sample-user'
 			},{
 				name: 'password', fieldLabel: 'Password', inputType: 'password', value: 'sample-password'
 			}]
 		})
-	});
-	win.show();
-
-	//F = win.items.first().getForm();
-	//Login.some1(F.getValues());
-	//Login.some1(F.getValues());
-
-	ZZZ = function(){
-		Login.some2({ a:1, b:2});
-		Login.some2({ a:1, b:2});
-		Login.some2({ a:1, b:2});
-	};
+	}).show();
 
 });
