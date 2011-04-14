@@ -5,10 +5,10 @@ Ext.onReady(function(){
 	Ext.create('Ext.window.Window', {
 		title: 'Login window',
 		width: 350, autoHeight: true,
-		closable: false, resizable: false,
+		closable: false, resizable: false, bodyStyle: 'background-color:#DFE8F6; padding: 5px;',
 		items: Ext.create('Ext.form.FormPanel', {
 			api: { submit: Login.some1 },
-			border: false, frame: true,
+			border: false, bodyStyle: 'background-color:#DFE8F6;', // frame: true,
 			buttons: [{
 				text: 'Login',
 				handler: function(){

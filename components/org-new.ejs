@@ -1,5 +1,6 @@
 // vim: ft=javascript
 var orgNew = function(){
+	Ext.Date.monthNames = [ 'января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря' ];
 
 	var p1 = Ext.create('Ext.form.FormPanel', {
 					title: 'Основная информация', xtype: 'form', bodyStyle: 'background-color:#DFE8F6; padding: 5px 0 0 0;',
@@ -57,16 +58,78 @@ var orgNew = function(){
 							}]
 						}]
 					},{
-						//items: {
-							height: 90, fieldLabel: 'Комментарий', xtype: 'textarea' 
-							//}
+						height: 90, fieldLabel: 'Комментарий', xtype: 'textarea' 
 					}]
+	});
+
+	Ext.define('Ext.App.RowExpander', {
+		extend: 'Ext.AbstractPlugin',
+		alias: 'plugin.rowexp',
+		tpl: 'Template missing',
+		constructor: function(){
+			this.callParent(arguments);
+			var tplFn = this.tpl,
+					grid = this.getCmp();
+			grid.features = [{
+				ftype: 'rowbody',
+    		getAdditionalData: function(data, idx, record, orig) {
+					var o = Ext.grid.feature.RowBody.prototype.getAdditionalData.apply(this, arguments);
+					o.rowBody = tplFn(data);
+					return o;
+				},
+			},
+			{ ftype: 'rowwrap' }
+			];
+		},
+
+	});
+	
+	// 4DEBUG
+	function getRndString(i){
+		var str = '', chars = '01234 5678 9ABC DEFG HIJK LMNO PQRS TUVW XTZa bcde fghi klmn opqr stuv wxyz'.split('');
+		for(var n=1; n<i; n++){ str += chars[Math.floor(Math.random() * chars.length)] }
+		return str;
+	}
+
+	var p2 = Ext.create('Ext.grid.GridPanel', {
+		title: 'Контакты',
+		tbar: [{ text: 'Новый контакт', xtype: 'button' }],
+		plugins: [{
+			tpl: function(data){
+				if (!data.add){ return null };
+				var ret = '<p class="ppl-add-info">';
+				for(var a in data.add){ ret += '<b>' + a + ': </b>' + data.add[a] + ', ' };
+				return ret.slice(0,-2) + '</p>';
+			},
+			ptype: 'rowexp'
+		}],
+
+		store: new Ext.data.Store({
+			fields: [
+				{ name: 'fio' },
+				{ name: 'dolg' },
+				{ name: 'dat', type: 'date' },
+				{ name: 'add' },
+			],
+			data: [
+				{ fio: 'Иванов И.И.', dolg: 'директор', dat: '2011/01/01 12:11', add: { 'ICQ': '123311133', 'Рабочий телефон': '(343) 231-13-12' }  },
+				{ fio: 'Петров П.П.', dolg: 'менеджер', dat: '2011/03/03 1:11', add: { 'Email': 'add@mail.com', 'Комментарий': 'Звонить только до обеда - потом оно спит' } },
+				{ fio: 'Сидоров С.С.', dolg: 'бухгалтер', dat: '2010/07/07 12:12', add: { 'Сотовый': '+7 922 11 23 871', 'Комментарий': 'Пропал, трудку не берет, женился штоле?'} },
+			]
+		}),
+		columns: [{
+			flex: 3, text: 'ФИО', dataIndex: 'fio', 
+		},{
+			flex: 2, text: 'Должность', dataIndex: 'dolg',
+		},{
+			flex: 2, text: 'Дата последнего контакта', dataIndex: 'dat', renderer: Ext.util.Format.dateRenderer('d F Y, H:i')
+		}],
+		viewConfig: { forceFit: true, itemTpl: 'asdasdasd' }
 	});
 
 	var win = Ext.create('Ext.window.Window', {
 		modal: true,
-		//tools: { id: 'maximize' },
-		bbar: ['->', { xtype: 'button', text: 'Сохранить' }],
+		bbar: ['->', { xtype: 'button', text: 'Сохранить карточку организации' }],
 		title: 'Редактирование карточки предприятия, Время [ у нас - 13:40, у них - 18:40 ]',
 		height: 530,
 		width: 800, layout: 'fit',
@@ -75,11 +138,11 @@ var orgNew = function(){
 		items: new Ext.create('Ext.tab.TabPanel', {
 			layout: 'fit',
 			border: false,
-			//activeTab: 1,
+			activeTab: 1,
 			//tabPosition: 'bottom',
 			items: [ 
 				p1,
-				{ title: 'Контакты', html: 'Контакты' },
+				p2,
 				{ title: 'Договора', html: 'Контакты' },
 				{ title: 'Продажи', html: 'Контакты' },
 				{ title: 'Техническая база', html: 'Отчеты' },
